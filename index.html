@@ -1,322 +1,1247 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian: Permintaan & Elastisitas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f7f6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 50px;
-        }
-        /* Sticky Progress Bar */
-        .progress-container {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 1000;
-            padding: 15px 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-bottom: 2px solid #4361ee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .progress-text { font-weight: bold; color: #4361ee; }
-        
-        /* Kartu Soal - Mobile Friendly */
-        .quiz-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 800px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            border: 1px solid #e9ecef;
-            scroll-margin-top: 80px; /* Jarak saat auto-scroll */
-        }
-        .question-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #2b2d42;
-        }
-        
-        /* Checkbox-style Options yang sama panjang */
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .option-label {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            min-height: 60px; /* Memastikan semua kotak minimal sama panjang/tinggi */
-            padding: 12px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            background: #f8f9fa;
-            margin: 0;
-            word-break: break-word;
-        }
-        .option-label:hover {
-            border-color: #aeb8ff;
-            background: #f0f4ff;
-        }
-        .option-input { display: none; }
-        /* Style ketika opsi dipilih */
-        .option-input:checked + .option-label {
-            background-color: #e0e7ff;
-            border-color: #4361ee;
-            color: #1a237e;
-            font-weight: 600;
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-        }
 
-        .submit-btn {
-            display: block;
-            width: 100%;
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 10px;
-        }
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-        /* Layar Sukses / Terima Kasih */
-        #result-screen {
-            display: none;
-            text-align: center;
-            padding: 50px 20px;
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        #result-screen h1 { color: #28a745; font-size: 2.5rem; margin-bottom: 20px; }
-        #score-display { font-size: 4rem; font-weight: 800; color: #4361ee; display: block; margin: 20px 0; }
-        
-        /* Overlay Loading */
-        #loading-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); z-index: 2000;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
-        .unanswered-warning { border: 2px solid #dc3545 !important; background: #fff3f3; }
-    </style>
+<title>Ujian Ekonomi</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eef2ff,
+      #f8fafc
+    );
+
+  color: #1e293b;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 18px;
+}
+
+.header {
+  background:
+    linear-gradient(
+      135deg,
+      #1e3a8a,
+      #2563eb
+    );
+
+  color: white;
+
+  padding: 24px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.12);
+
+  margin-bottom: 18px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 25px;
+}
+
+.header p {
+  margin: 4px 0;
+  opacity: .9;
+}
+
+.card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  margin-bottom: 18px;
+
+  box-shadow:
+    0 5px 20px rgba(0,0,0,.07);
+}
+
+label {
+  font-weight: bold;
+
+  display: block;
+
+  margin-bottom: 7px;
+}
+
+input[type="text"],
+select {
+
+  width: 100%;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  border: 1px solid #cbd5e1;
+
+  font-size: 16px;
+
+  margin-bottom: 15px;
+}
+
+input:focus,
+select:focus {
+
+  outline: none;
+
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.12);
+}
+
+button {
+
+  width: 100%;
+
+  border: none;
+
+  padding: 15px;
+
+  border-radius: 13px;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  background: #2563eb;
+
+  color: white;
+
+  transition: .2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.info-bar {
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 20;
+
+  background:
+    rgba(255,255,255,.96);
+
+  backdrop-filter:
+    blur(10px);
+
+  padding: 10px 0;
+
+  margin-bottom: 15px;
+
+  border-bottom:
+    1px solid #e2e8f0;
+}
+
+.info-inner {
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.progress {
+
+  height: 9px;
+
+  background: #e2e8f0;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  margin-top: 8px;
+}
+
+.progress-bar {
+
+  height: 100%;
+
+  width: 0%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2563eb,
+      #06b6d4
+    );
+
+  transition: .3s;
+}
+
+.timer {
+
+  font-weight: bold;
+
+  color: #1d4ed8;
+
+  white-space: nowrap;
+}
+
+.question {
+
+  scroll-margin-top: 100px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 17px;
+
+  padding: 18px;
+
+  margin-bottom: 16px;
+
+  background: #fff;
+}
+
+.question-number {
+
+  display: inline-block;
+
+  background: #dbeafe;
+
+  color: #1d4ed8;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  margin-bottom: 10px;
+}
+
+.question-text {
+
+  font-weight: bold;
+
+  line-height: 1.55;
+
+  margin-bottom: 14px;
+}
+
+.option {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  padding: 13px;
+
+  margin-top: 9px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+  line-height: 1.45;
+}
+
+.option:hover {
+
+  background: #f8fafc;
+
+  border-color: #93c5fd;
+}
+
+.option.selected {
+
+  background: #eff6ff;
+
+  border-color: #2563eb;
+}
+
+.option input {
+
+  margin-top: 3px;
+
+  width: 18px;
+
+  height: 18px;
+
+  flex-shrink: 0;
+}
+
+.submit-area {
+
+  position: sticky;
+
+  bottom: 0;
+
+  background:
+    rgba(255,255,255,.96);
+
+  backdrop-filter:
+    blur(10px);
+
+  padding: 12px 0;
+
+  border-top:
+    1px solid #e2e8f0;
+}
+
+.warning {
+
+  background: #fef3c7;
+
+  color: #92400e;
+
+  padding: 13px;
+
+  border-radius: 12px;
+
+  margin-bottom: 15px;
+
+  display: none;
+
+  line-height: 1.5;
+}
+
+.error {
+
+  background: #fee2e2;
+
+  color: #991b1b;
+
+  padding: 13px;
+
+  border-radius: 12px;
+
+  margin-bottom: 15px;
+
+  display: none;
+}
+
+.success {
+
+  text-align: center;
+
+  padding: 45px 20px;
+}
+
+.success-icon {
+
+  font-size: 60px;
+
+  margin-bottom: 15px;
+}
+
+.success h2 {
+
+  color: #166534;
+
+  margin-bottom: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media(max-width:600px) {
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .header h1 {
+    font-size: 21px;
+  }
+
+  .card {
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .question {
+    padding: 14px;
+  }
+
+  .option {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .info-inner {
+    font-size: 13px;
+  }
+
+}
+
+</style>
+
 </head>
+
+
 <body>
 
-    <!-- Progress Bar Tetap Di Atas -->
-    <div class="progress-container" id="progress-container">
-        <div class="h5 mb-0 fw-bold">Ujian Ekonomi</div>
-        <div class="progress-text" id="progress-text">Terjawab: 0 / 100</div>
+<div class="container">
+
+
+<!-- =================================================
+     IDENTITAS
+================================================= -->
+
+<div id="identityPage">
+
+  <div class="header">
+
+    <h1>📘 Ujian Ekonomi</h1>
+
+    <p>
+      Materi: Permintaan dan Elastisitas Permintaan
+    </p>
+
+    <p>
+      SMA Negeri 1 Cidahu
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <label for="nama">
+      Nama Siswa
+    </label>
+
+    <input
+      type="text"
+      id="nama"
+      placeholder="Tuliskan nama lengkap"
+      autocomplete="off"
+    >
+
+
+    <label for="kelas">
+      Kelas
+    </label>
+
+    <select id="kelas">
+
+      <option value="">
+        Pilih kelas
+      </option>
+
+      <option value="10.1">10.1</option>
+      <option value="10.2">10.2</option>
+      <option value="10.3">10.3</option>
+      <option value="10.4">10.4</option>
+      <option value="10.5">10.5</option>
+      <option value="10.6">10.6</option>
+
+    </select>
+
+
+    <div id="startError"
+         class="error">
     </div>
 
-    <!-- Kontainer Seluruh Soal -->
-    <div class="container pb-5" id="quiz-container">
-        <!-- Soal digenerate via JS -->
+
+    <button
+      id="startButton"
+      onclick="mulaiUjian()">
+
+      🚀 Mulai Ujian
+
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- =================================================
+     HALAMAN UJIAN
+================================================= -->
+
+<div id="examPage"
+     class="hidden">
+
+
+  <div class="header">
+
+    <h1>
+      📚 Ujian Ekonomi
+    </h1>
+
+    <p>
+      Jawablah seluruh soal dengan teliti.
+    </p>
+
+  </div>
+
+
+  <div class="info-bar">
+
+    <div class="info-inner">
+
+      <div>
+
+        <strong>
+          Progress:
+        </strong>
+
+        <span id="progressText">
+          0 / 100
+        </span>
+
+      </div>
+
+      <div class="timer"
+           id="timer">
+
+        00:00:00
+
+      </div>
+
     </div>
 
-    <div class="container">
-        <button class="btn btn-primary submit-btn" id="submit-btn" onclick="submitExam()">Kirim Jawaban</button>
+
+    <div class="progress">
+
+      <div
+        id="progressBar"
+        class="progress-bar">
+      </div>
+
     </div>
 
-    <!-- Layar Selesai (Hanya Ucapan Terima Kasih & Nilai) -->
-    <div id="result-screen">
-        <h1><i class="fas fa-check-circle"></i> Selesai!</h1>
-        <p class="fs-5 text-muted">Terima kasih telah menyelesaikan ujian.</p>
-        <p class="fs-6 mt-3 mb-0">Nilai Anda:</p>
-        <span id="score-display">0</span>
+  </div>
+
+
+  <div
+    id="warning"
+    class="warning">
+  </div>
+
+
+  <div id="questions">
+  </div>
+
+
+  <div class="submit-area">
+
+    <button
+      id="submitButton"
+      onclick="kirimUjian()">
+
+      📤 Kirim Jawaban
+
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- =================================================
+     HALAMAN SELESAI
+================================================= -->
+
+<div id="successPage"
+     class="hidden">
+
+  <div class="card success">
+
+    <div class="success-icon">
+      ✅
     </div>
 
-    <!-- Loading Screen saat kirim data -->
-    <div id="loading-overlay">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h4 class="mt-3">Mengirim Jawaban...</h4>
-    </div>
+    <h2>
+      Ujian Telah Selesai
+    </h2>
 
-    <script>
-        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIytiT04OQAFyrHhLpSKPpADUutZtXhdfSIvazL69txgemOx_O5E-YpsFznldIRXs9/exec"; 
+    <p>
+      Terima kasih. Jawaban Anda telah berhasil
+      dikirim.
+    </p>
 
-        // Database Inti Soal berdasarkan referensi
-        const materiInti = [
-            { q: "Permintaan adalah sejumlah barang atau jasa yang...", options: ["Ingin dan mampu dibeli pada tingkat harga dan waktu tertentu", "Hanya sebatas keinginan saja tanpa ada uang", "Telah dibeli oleh konsumen di masa lalu", "Ditawarkan oleh penjual di pasar"], ans: "Ingin dan mampu dibeli pada tingkat harga dan waktu tertentu" },
-            { q: "Seseorang ingin membeli tiket konser tetapi uang tabungannya tidak cukup. Hal ini tergolong ke dalam permintaan...", options: ["Permintaan Absolut", "Permintaan Efektif", "Permintaan Potensial", "Permintaan Proporsional"], ans: "Permintaan Absolut" },
-            { q: "Konsumen memiliki kemampuan daya beli, namun masih ragu dan belum melakukan transaksi (menunda). Ini disebut permintaan...", options: ["Permintaan Potensial", "Permintaan Efektif", "Permintaan Absolut", "Permintaan Turunan"], ans: "Permintaan Potensial" },
-            { q: "Berikut ini yang BUKAN merupakan faktor yang memengaruhi permintaan adalah...", options: ["Biaya produksi pabrik", "Harga barang itu sendiri", "Pendapatan konsumen", "Harga barang substitusi"], ans: "Biaya produksi pabrik" },
-            { q: "Jika harga daging sapi naik drastis, maka sesuai hukum permintaan yang dipengaruhi harga substitusi, permintaan terhadap daging ayam akan...", options: ["Mengalami Kenaikan", "Mengalami Penurunan", "Tetap saja tidak berubah", "Turun drastis hingga nol"], ans: "Mengalami Kenaikan" },
-            { q: "Hukum permintaan berbunyi: Jika harga suatu barang naik, maka jumlah barang yang diminta akan...", options: ["Turun", "Naik", "Tetap konstan", "Berubah proporsional"], ans: "Turun" },
-            { q: "Bentuk kurva permintaan normal adalah meluncur dari...", options: ["Kiri atas ke kanan bawah (Slope Negatif)", "Kiri bawah ke kanan atas (Slope Positif)", "Garis lurus vertikal sejajar harga", "Garis lurus horizontal sejajar kuantitas"], ans: "Kiri atas ke kanan bawah (Slope Negatif)" },
-            { q: "Elastisitas yang menunjukkan konsumen sangat sensitif terhadap perubahan harga (E > 1) biasanya terjadi pada barang...", options: ["Mewah atau barang tersier", "Kebutuhan pokok", "Barang tidak berharga", "Beras dan obat-obatan"], ans: "Mewah atau barang tersier" },
-            { q: "Kurva elastisitas untuk kondisi 'Inelastis' (E < 1) memiliki bentuk visual yang...", options: ["Curam", "Landai", "Horizontal Sempurna", "Melengkung 45 derajat"], ans: "Curam" },
-            { q: "Rumus untuk menghitung Koefisien Elastisitas Permintaan (Ed) adalah...", options: ["(ΔQ / ΔP) × (P / Q)", "(ΔP / ΔQ) × (Q / P)", "(Q2 - Q1) / P", "P × Q"], ans: "(ΔQ / ΔP) × (P / Q)" }
-        ];
+    <p>
+      Silakan mengikuti arahan guru berikutnya.
+    </p>
 
-        let generatedQuestions = [];
-        let userAnswers = {};
+  </div>
 
-        // Inisialisasi Aplikasi
-        window.onload = () => {
-            generate100Questions();
-            renderQuiz();
-        };
+</div>
 
-        // Fungsi mengacak array (Fisher-Yates)
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
 
-        // Generate 100 Soal secara dinamis
-        function generate100Questions() {
-            let tempQuestions = [];
-            // Melakukan looping dari materi inti untuk menciptakan 100 soal
-            for(let i = 0; i < 100; i++) {
-                let base = materiInti[i % materiInti.length];
-                
-                // Copy opsi dan acak pilihan jawabannya (Randomisasi Pilihan)
-                let shuffledOptions = shuffleArray([...base.options]);
-                
-                tempQuestions.push({
-                    id: i + 1,
-                    text: base.q,
-                    options: shuffledOptions,
-                    correctAnswer: base.ans
-                });
-            }
-            // Acak urutan 100 soal (Randomisasi Soal)
-            generatedQuestions = shuffleArray(tempQuestions);
-        }
+</div>
 
-        // Render HTML soal
-        function renderQuiz() {
-            const container = document.getElementById('quiz-container');
-            let html = "";
-            
-            generatedQuestions.forEach((q, index) => {
-                const nomorSoal = index + 1;
-                html += `
-                <div class="quiz-card" id="card-${nomorSoal}">
-                    <div class="question-text">
-                        <span class="badge bg-secondary me-2">${nomorSoal}</span>
-                        ${q.text}
-                    </div>
-                    <div class="options-grid">
-                        ${q.options.map((opt, optIndex) => `
-                            <div>
-                                <input type="radio" class="option-input" 
-                                       name="soal-${nomorSoal}" 
-                                       id="soal-${nomorSoal}-opt-${optIndex}" 
-                                       value="${opt}"
-                                       onchange="recordAnswer(${nomorSoal}, '${opt}', '${q.correctAnswer}')">
-                                <label class="option-label" for="soal-${nomorSoal}-opt-${optIndex}">
-                                    ${opt}
-                                </label>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
 
-        // Catat Jawaban & Update Progress
-        function recordAnswer(nomorSoal, selectedValue, correctAnswer) {
-            userAnswers[nomorSoal] = {
-                answer: selectedValue,
-                isCorrect: (selectedValue === correctAnswer)
-            };
-            
-            // Hapus efek warning merah jika sebelumnya kosong
-            document.getElementById(`card-${nomorSoal}`).classList.remove('unanswered-warning');
+<script>
 
-            // Update Text Progress
-            const terjawab = Object.keys(userAnswers).length;
-            document.getElementById('progress-text').innerText = `Terjawab: ${terjawab} / 100`;
-        }
 
-        // Submit dan Validasi
-        function submitExam() {
-            let unanswered = [];
-            
-            // Cek 100 soal apakah ada yang kosong
-            for(let i = 1; i <= 100; i++) {
-                if(!userAnswers[i]) {
-                    unanswered.push(i);
-                    document.getElementById(`card-${i}`).classList.add('unanswered-warning');
+/* =====================================================
+   VARIABEL
+===================================================== */
+
+let token = "";
+
+let startTime = null;
+
+let questions = [];
+
+let answers = {};
+
+let timerInterval = null;
+
+let examActive = false;
+
+
+/* =====================================================
+   MULAI UJIAN
+===================================================== */
+
+function mulaiUjian() {
+
+  const nama =
+    document
+      .getElementById("nama")
+      .value
+      .trim();
+
+  const kelas =
+    document
+      .getElementById("kelas")
+      .value;
+
+
+  const error =
+    document.getElementById("startError");
+
+
+  error.style.display = "none";
+
+
+  if (!nama) {
+
+    tampilError(
+      error,
+      "Nama siswa wajib diisi."
+    );
+
+    return;
+  }
+
+
+  if (!kelas) {
+
+    tampilError(
+      error,
+      "Silakan pilih kelas."
+    );
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById("startButton");
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ Menyiapkan soal...";
+
+
+  google.script.run
+
+    .withSuccessHandler(function(result) {
+
+      if (!result || !result.ok) {
+
+        tampilError(
+          error,
+          "Ujian tidak dapat dimulai."
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+          "🚀 Mulai Ujian";
+
+        return;
+      }
+
+
+      token =
+        result.token;
+
+      startTime =
+        new Date(result.startTime);
+
+      questions =
+        result.questions;
+
+
+      examActive = true;
+
+
+      document
+        .getElementById("identityPage")
+        .classList.add("hidden");
+
+
+      document
+        .getElementById("examPage")
+        .classList.remove("hidden");
+
+
+      renderQuestions();
+
+      mulaiTimer();
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      tampilError(
+        error,
+        err.message ||
+        "Terjadi kesalahan."
+      );
+
+      button.disabled = false;
+
+      button.textContent =
+        "🚀 Mulai Ujian";
+
+    })
+
+    .startExam(
+      nama,
+      kelas
+    );
+
+}
+
+
+/* =====================================================
+   TAMPIL ERROR
+===================================================== */
+
+function tampilError(element, message) {
+
+  element.textContent =
+    "⚠️ " + message;
+
+  element.style.display =
+    "block";
+}
+
+
+/* =====================================================
+   RENDER SOAL
+===================================================== */
+
+function renderQuestions() {
+
+  const container =
+    document.getElementById("questions");
+
+  container.innerHTML = "";
+
+
+  questions.forEach(function(item, index) {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "question";
+
+    card.id =
+      "question-" + item.id;
+
+
+    const number =
+      document.createElement("div");
+
+    number.className =
+      "question-number";
+
+    number.textContent =
+      "Soal " + (index + 1);
+
+
+    const text =
+      document.createElement("div");
+
+    text.className =
+      "question-text";
+
+    text.textContent =
+      item.q;
+
+
+    card.appendChild(number);
+
+    card.appendChild(text);
+
+
+    item.options.forEach(function(option) {
+
+      const label =
+        document.createElement("label");
+
+      label.className =
+        "option";
+
+
+      const checkbox =
+        document.createElement("input");
+
+      checkbox.type =
+        "checkbox";
+
+      checkbox.name =
+        item.id;
+
+      checkbox.value =
+        option.id;
+
+
+      checkbox.addEventListener(
+        "change",
+        function() {
+
+          if (this.checked) {
+
+            /*
+             * Walaupun checkbox digunakan
+             * sebagai tampilan pilihan,
+             * setiap soal hanya boleh
+             * memiliki satu jawaban.
+             */
+
+            const siblings =
+              card.querySelectorAll(
+                'input[type="checkbox"]'
+              );
+
+            siblings.forEach(
+              function(other) {
+
+                if (other !== checkbox) {
+
+                  other.checked =
+                    false;
+
                 }
-            }
 
-            // Jika masih ada yang kosong, beri tahu nomor soal & scroll otomatis
-            if (unanswered.length > 0) {
-                alert(`Masih ada soal yang kosong!\nSilakan isi nomor urut berikut: ${unanswered.join(', ')}`);
-                // Scroll menuju soal pertama yang kosong
-                document.getElementById(`card-${unanswered[0]}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
+              }
+            );
 
-            // Jika semua terisi, proses kirim ke App Script
-            if(confirm('Anda yakin ingin mengirim jawaban sekarang?')) {
-                sendDataToScript();
-            }
-        }
 
-        // Kirim via fetch API ke Google Apps Script
-        function sendDataToScript() {
-            document.getElementById('loading-overlay').style.display = 'flex';
-            
-            // Format data untuk dikirim
-            let payload = {
-                answers: Object.values(userAnswers) // Mengirim array of { answer, isCorrect }
-            };
+            answers[item.id] =
+              option.id;
 
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                // body diubah ke string text plain agar tidak terkena error CORS preflight strict
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading-overlay').style.display = 'none';
-                if(data.status === "success") {
-                    showResult(data.nilai);
-                } else {
-                    alert("Terjadi kesalahan sistem: " + data.message);
+
+            label.classList.add(
+              "selected"
+            );
+
+
+            siblings.forEach(
+              function(other) {
+
+                if (
+                  other !== checkbox
+                ) {
+
+                  other
+                    .closest(".option")
+                    .classList
+                    .remove("selected");
+
                 }
-            })
-            .catch(error => {
-                document.getElementById('loading-overlay').style.display = 'none';
-                alert("Gagal terhubung ke server. Pastikan URL Apps Script sudah diubah dengan benar.");
-                console.error(error);
-            });
-        }
 
-        // Sembunyikan Soal, Tampilkan Nilai & Ucapan Terima Kasih
-        function showResult(nilai) {
-            document.getElementById('progress-container').style.display = 'none';
-            document.getElementById('quiz-container').style.display = 'none';
-            document.getElementById('submit-btn').style.display = 'none';
-            
-            const resultScreen = document.getElementById('result-screen');
-            resultScreen.style.display = 'block';
-            document.getElementById('score-display').innerText = nilai;
-            
-            // Scroll ke atas
-            window.scrollTo(0, 0);
+              }
+            );
+
+          } else {
+
+            delete answers[item.id];
+
+            label.classList.remove(
+              "selected"
+            );
+
+          }
+
+
+          updateProgress();
+
         }
-    </script>
+      );
+
+
+      label.appendChild(
+        checkbox
+      );
+
+
+      const span =
+        document.createElement("span");
+
+      span.textContent =
+        option.text;
+
+
+      label.appendChild(
+        span
+      );
+
+
+      card.appendChild(label);
+
+    });
+
+
+    container.appendChild(card);
+
+  });
+
+
+  updateProgress();
+
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function updateProgress() {
+
+  const answered =
+    Object.keys(answers).length;
+
+  const total =
+    questions.length;
+
+
+  document
+    .getElementById("progressText")
+    .textContent =
+    answered + " / " + total;
+
+
+  const percent =
+    total > 0
+      ? (answered / total) * 100
+      : 0;
+
+
+  document
+    .getElementById("progressBar")
+    .style.width =
+    percent + "%";
+
+}
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+function mulaiTimer() {
+
+  clearInterval(timerInterval);
+
+
+  timerInterval =
+    setInterval(function() {
+
+      if (!startTime) return;
+
+
+      const now =
+        new Date();
+
+
+      const diff =
+        now.getTime() -
+        startTime.getTime();
+
+
+      const totalSeconds =
+        Math.floor(diff / 1000);
+
+
+      const hours =
+        Math.floor(
+          totalSeconds / 3600
+        );
+
+
+      const minutes =
+        Math.floor(
+          (totalSeconds % 3600) / 60
+        );
+
+
+      const seconds =
+        totalSeconds % 60;
+
+
+      document
+        .getElementById("timer")
+        .textContent =
+        String(hours).padStart(2,"0")
+        + ":" +
+        String(minutes).padStart(2,"0")
+        + ":" +
+        String(seconds).padStart(2,"0");
+
+
+    }, 1000);
+
+}
+
+
+/* =====================================================
+   KIRIM UJIAN
+===================================================== */
+
+function kirimUjian() {
+
+  if (!examActive) return;
+
+
+  const unanswered =
+    questions.filter(function(item) {
+
+      return !answers[item.id];
+
+    });
+
+
+  if (unanswered.length > 0) {
+
+    const nomor =
+      unanswered
+        .map(function(item) {
+
+          return (
+            questions.indexOf(item) + 1
+          );
+
+        });
+
+
+    const warning =
+      document.getElementById("warning");
+
+
+    warning.innerHTML =
+      "<strong>Masih ada soal yang belum dijawab.</strong><br>" +
+      "Nomor soal: " +
+      nomor.join(", ") +
+      "<br><br>" +
+      "Silakan lengkapi terlebih dahulu.";
+
+
+    warning.style.display =
+      "block";
+
+
+    const first =
+      document.getElementById(
+        "question-" +
+        unanswered[0].id
+      );
+
+
+    if (first) {
+
+      first.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+
+    return;
+
+  }
+
+
+  const yakin =
+    confirm(
+      "Semua soal sudah dijawab.\n\n" +
+      "Apakah Anda yakin ingin mengirim jawaban?"
+    );
+
+
+  if (!yakin) return;
+
+
+  const button =
+    document.getElementById(
+      "submitButton"
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ Mengirim jawaban...";
+
+
+  const payload = {
+
+    token: token,
+
+    answers: answers
+
+  };
+
+
+  google.script.run
+
+    .withSuccessHandler(function(result) {
+
+      clearInterval(
+        timerInterval
+      );
+
+
+      examActive = false;
+
+
+      document
+        .getElementById("examPage")
+        .classList.add("hidden");
+
+
+      document
+        .getElementById("successPage")
+        .classList.remove("hidden");
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      button.disabled = false;
+
+      button.textContent =
+        "📤 Kirim Jawaban";
+
+
+      const warning =
+        document.getElementById(
+          "warning"
+        );
+
+
+      warning.innerHTML =
+        "⚠️ " +
+        (
+          err.message ||
+          "Jawaban gagal dikirim."
+        );
+
+
+      warning.style.display =
+        "block";
+
+
+    })
+
+    .submitExam(payload);
+
+}
+
+
+/* =====================================================
+   PERINGATAN KELUAR HALAMAN
+===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  function(e) {
+
+    if (!examActive) return;
+
+    e.preventDefault();
+
+    e.returnValue = "";
+
+  }
+);
+
+
+</script>
+
 </body>
+
 </html>
