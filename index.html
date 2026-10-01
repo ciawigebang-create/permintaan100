@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian: Permintaan & Elastisitas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 50px;
+        }
+        /* Sticky Progress Bar */
+        .progress-container {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1000;
+            padding: 15px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-bottom: 2px solid #4361ee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .progress-text { font-weight: bold; color: #4361ee; }
+        
+        /* Kartu Soal - Mobile Friendly */
+        .quiz-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid #e9ecef;
+            scroll-margin-top: 80px; /* Jarak saat auto-scroll */
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2b2d42;
+        }
+        
+        /* Checkbox-style Options yang sama panjang */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-height: 60px; /* Memastikan semua kotak minimal sama panjang/tinggi */
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background: #f8f9fa;
+            margin: 0;
+            word-break: break-word;
+        }
+        .option-label:hover {
+            border-color: #aeb8ff;
+            background: #f0f4ff;
+        }
+        .option-input { display: none; }
+        /* Style ketika opsi dipilih */
+        .option-input:checked + .option-label {
+            background-color: #e0e7ff;
+            border-color: #4361ee;
+            color: #1a237e;
+            font-weight: 600;
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        /* Layar Sukses / Terima Kasih */
+        #result-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #result-screen h1 { color: #28a745; font-size: 2.5rem; margin-bottom: 20px; }
+        #score-display { font-size: 4rem; font-weight: 800; color: #4361ee; display: block; margin: 20px 0; }
+        
+        /* Overlay Loading */
+        #loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); z-index: 2000;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .unanswered-warning { border: 2px solid #dc3545 !important; background: #fff3f3; }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Bar Tetap Di Atas -->
+    <div class="progress-container" id="progress-container">
+        <div class="h5 mb-0 fw-bold">Ujian Ekonomi</div>
+        <div class="progress-text" id="progress-text">Terjawab: 0 / 100</div>
+    </div>
+
+    <!-- Kontainer Seluruh Soal -->
+    <div class="container pb-5" id="quiz-container">
+        <!-- Soal digenerate via JS -->
+    </div>
+
+    <div class="container">
+        <button class="btn btn-primary submit-btn" id="submit-btn" onclick="submitExam()">Kirim Jawaban</button>
+    </div>
+
+    <!-- Layar Selesai (Hanya Ucapan Terima Kasih & Nilai) -->
+    <div id="result-screen">
+        <h1><i class="fas fa-check-circle"></i> Selesai!</h1>
+        <p class="fs-5 text-muted">Terima kasih telah menyelesaikan ujian.</p>
+        <p class="fs-6 mt-3 mb-0">Nilai Anda:</p>
+        <span id="score-display">0</span>
+    </div>
+
+    <!-- Loading Screen saat kirim data -->
+    <div id="loading-overlay">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        <h4 class="mt-3">Mengirim Jawaban...</h4>
+    </div>
+
+    <script>
+        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIytiT04OQAFyrHhLpSKPpADUutZtXhdfSIvazL69txgemOx_O5E-YpsFznldIRXs9/exec"; 
+
+        // Database Inti Soal berdasarkan referensi
+        const materiInti = [
+            { q: "Permintaan adalah sejumlah barang atau jasa yang...", options: ["Ingin dan mampu dibeli pada tingkat harga dan waktu tertentu", "Hanya sebatas keinginan saja tanpa ada uang", "Telah dibeli oleh konsumen di masa lalu", "Ditawarkan oleh penjual di pasar"], ans: "Ingin dan mampu dibeli pada tingkat harga dan waktu tertentu" },
+            { q: "Seseorang ingin membeli tiket konser tetapi uang tabungannya tidak cukup. Hal ini tergolong ke dalam permintaan...", options: ["Permintaan Absolut", "Permintaan Efektif", "Permintaan Potensial", "Permintaan Proporsional"], ans: "Permintaan Absolut" },
+            { q: "Konsumen memiliki kemampuan daya beli, namun masih ragu dan belum melakukan transaksi (menunda). Ini disebut permintaan...", options: ["Permintaan Potensial", "Permintaan Efektif", "Permintaan Absolut", "Permintaan Turunan"], ans: "Permintaan Potensial" },
+            { q: "Berikut ini yang BUKAN merupakan faktor yang memengaruhi permintaan adalah...", options: ["Biaya produksi pabrik", "Harga barang itu sendiri", "Pendapatan konsumen", "Harga barang substitusi"], ans: "Biaya produksi pabrik" },
+            { q: "Jika harga daging sapi naik drastis, maka sesuai hukum permintaan yang dipengaruhi harga substitusi, permintaan terhadap daging ayam akan...", options: ["Mengalami Kenaikan", "Mengalami Penurunan", "Tetap saja tidak berubah", "Turun drastis hingga nol"], ans: "Mengalami Kenaikan" },
+            { q: "Hukum permintaan berbunyi: Jika harga suatu barang naik, maka jumlah barang yang diminta akan...", options: ["Turun", "Naik", "Tetap konstan", "Berubah proporsional"], ans: "Turun" },
+            { q: "Bentuk kurva permintaan normal adalah meluncur dari...", options: ["Kiri atas ke kanan bawah (Slope Negatif)", "Kiri bawah ke kanan atas (Slope Positif)", "Garis lurus vertikal sejajar harga", "Garis lurus horizontal sejajar kuantitas"], ans: "Kiri atas ke kanan bawah (Slope Negatif)" },
+            { q: "Elastisitas yang menunjukkan konsumen sangat sensitif terhadap perubahan harga (E > 1) biasanya terjadi pada barang...", options: ["Mewah atau barang tersier", "Kebutuhan pokok", "Barang tidak berharga", "Beras dan obat-obatan"], ans: "Mewah atau barang tersier" },
+            { q: "Kurva elastisitas untuk kondisi 'Inelastis' (E < 1) memiliki bentuk visual yang...", options: ["Curam", "Landai", "Horizontal Sempurna", "Melengkung 45 derajat"], ans: "Curam" },
+            { q: "Rumus untuk menghitung Koefisien Elastisitas Permintaan (Ed) adalah...", options: ["(ΔQ / ΔP) × (P / Q)", "(ΔP / ΔQ) × (Q / P)", "(Q2 - Q1) / P", "P × Q"], ans: "(ΔQ / ΔP) × (P / Q)" }
+        ];
+
+        let generatedQuestions = [];
+        let userAnswers = {};
+
+        // Inisialisasi Aplikasi
+        window.onload = () => {
+            generate100Questions();
+            renderQuiz();
+        };
+
+        // Fungsi mengacak array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Generate 100 Soal secara dinamis
+        function generate100Questions() {
+            let tempQuestions = [];
+            // Melakukan looping dari materi inti untuk menciptakan 100 soal
+            for(let i = 0; i < 100; i++) {
+                let base = materiInti[i % materiInti.length];
+                
+                // Copy opsi dan acak pilihan jawabannya (Randomisasi Pilihan)
+                let shuffledOptions = shuffleArray([...base.options]);
+                
+                tempQuestions.push({
+                    id: i + 1,
+                    text: base.q,
+                    options: shuffledOptions,
+                    correctAnswer: base.ans
+                });
+            }
+            // Acak urutan 100 soal (Randomisasi Soal)
+            generatedQuestions = shuffleArray(tempQuestions);
+        }
+
+        // Render HTML soal
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = "";
+            
+            generatedQuestions.forEach((q, index) => {
+                const nomorSoal = index + 1;
+                html += `
+                <div class="quiz-card" id="card-${nomorSoal}">
+                    <div class="question-text">
+                        <span class="badge bg-secondary me-2">${nomorSoal}</span>
+                        ${q.text}
+                    </div>
+                    <div class="options-grid">
+                        ${q.options.map((opt, optIndex) => `
+                            <div>
+                                <input type="radio" class="option-input" 
+                                       name="soal-${nomorSoal}" 
+                                       id="soal-${nomorSoal}-opt-${optIndex}" 
+                                       value="${opt}"
+                                       onchange="recordAnswer(${nomorSoal}, '${opt}', '${q.correctAnswer}')">
+                                <label class="option-label" for="soal-${nomorSoal}-opt-${optIndex}">
+                                    ${opt}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Catat Jawaban & Update Progress
+        function recordAnswer(nomorSoal, selectedValue, correctAnswer) {
+            userAnswers[nomorSoal] = {
+                answer: selectedValue,
+                isCorrect: (selectedValue === correctAnswer)
+            };
+            
+            // Hapus efek warning merah jika sebelumnya kosong
+            document.getElementById(`card-${nomorSoal}`).classList.remove('unanswered-warning');
+
+            // Update Text Progress
+            const terjawab = Object.keys(userAnswers).length;
+            document.getElementById('progress-text').innerText = `Terjawab: ${terjawab} / 100`;
+        }
+
+        // Submit dan Validasi
+        function submitExam() {
+            let unanswered = [];
+            
+            // Cek 100 soal apakah ada yang kosong
+            for(let i = 1; i <= 100; i++) {
+                if(!userAnswers[i]) {
+                    unanswered.push(i);
+                    document.getElementById(`card-${i}`).classList.add('unanswered-warning');
+                }
+            }
+
+            // Jika masih ada yang kosong, beri tahu nomor soal & scroll otomatis
+            if (unanswered.length > 0) {
+                alert(`Masih ada soal yang kosong!\nSilakan isi nomor urut berikut: ${unanswered.join(', ')}`);
+                // Scroll menuju soal pertama yang kosong
+                document.getElementById(`card-${unanswered[0]}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Jika semua terisi, proses kirim ke App Script
+            if(confirm('Anda yakin ingin mengirim jawaban sekarang?')) {
+                sendDataToScript();
+            }
+        }
+
+        // Kirim via fetch API ke Google Apps Script
+        function sendDataToScript() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            
+            // Format data untuk dikirim
+            let payload = {
+                answers: Object.values(userAnswers) // Mengirim array of { answer, isCorrect }
+            };
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                // body diubah ke string text plain agar tidak terkena error CORS preflight strict
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading-overlay').style.display = 'none';
+                if(data.status === "success") {
+                    showResult(data.nilai);
+                } else {
+                    alert("Terjadi kesalahan sistem: " + data.message);
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading-overlay').style.display = 'none';
+                alert("Gagal terhubung ke server. Pastikan URL Apps Script sudah diubah dengan benar.");
+                console.error(error);
+            });
+        }
+
+        // Sembunyikan Soal, Tampilkan Nilai & Ucapan Terima Kasih
+        function showResult(nilai) {
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+            
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.style.display = 'block';
+            document.getElementById('score-display').innerText = nilai;
+            
+            // Scroll ke atas
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
