@@ -7,7 +7,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 50px; }
+        /* === FITUR ANTI CHEATING (ANTI COPY-PASTE) === */
+        body { 
+            background-color: #f4f7f6; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding-bottom: 50px; 
+            
+            /* Mencegah seleksi teks (highlight) di semua browser & HP */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        /* Pengecualian: Boleh menyeleksi teks hanya di dalam input Nama & Kelas */
+        input[type="text"], select {
+            -webkit-user-select: auto;
+            -khtml-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+        /* ============================================= */
+
         .progress-container { position: sticky; top: 0; background: white; z-index: 1000; padding: 15px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-bottom: 2px solid #4361ee; display: flex; justify-content: space-between; align-items: center; }
         .progress-text { font-weight: bold; color: #4361ee; }
         .quiz-card, .identity-card { background: #fff; border-radius: 12px; padding: 25px; margin: 20px auto; max-width: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #e9ecef; scroll-margin-top: 80px; }
@@ -79,10 +102,37 @@
     </div>
 
     <script>
+        // === SCRIPT ANTI CHEATING ===
+        // Mencegah Klik Kanan (Context Menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Mencegah fungsi Copy, Cut, dan Paste
+        document.addEventListener('copy', function(e) { e.preventDefault(); });
+        document.addEventListener('cut', function(e) { e.preventDefault(); });
+        document.addEventListener('paste', function(e) { e.preventDefault(); });
+
+        // Mencegah shortcut keyboard (Ctrl+C, Ctrl+V, Ctrl+U, Ctrl+A, F12 dll)
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+                (e.ctrlKey && (e.key === 'u' || e.key === 'U')) || 
+                (e.ctrlKey && (e.key === 'c' || e.key === 'C')) || 
+                (e.ctrlKey && (e.key === 'v' || e.key === 'V')) || 
+                (e.ctrlKey && (e.key === 'x' || e.key === 'X')) ||
+                (e.ctrlKey && (e.key === 'a' || e.key === 'A')) ||
+                (e.ctrlKey && (e.key === 's' || e.key === 'S'))
+            ) {
+                e.preventDefault();
+            }
+        });
+        // ============================
+
         // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIytiT04OQAFyrHhLpSKPpADUutZtXhdfSIvazL69txgemOx_O5E-YpsFznldIRXs9/exec"; 
 
-        // 100 Bank Soal Bervariasi
         const bankSoal = [
             // Konsep Dasar Permintaan
             { q: "Apa yang menjadi syarat utama terbentuknya permintaan (demand) yang sah di pasar?", options: ["Hanya keinginan dari konsumen", "Keinginan dan kemampuan untuk membeli", "Ketersediaan barang di gudang", "Penawaran harga dari produsen"], ans: "Keinginan dan kemampuan untuk membeli" },
@@ -129,44 +179,11 @@
             { q: "Harga awal boba Rp 10.000, terjual 50 cup. Saat harga naik jadi Rp 15.000, terjual 30 cup. Selisih harga (ΔP) adalah...", options: ["Rp 5.000", "Rp 10.000", "Rp 15.000", "-Rp 5.000"], ans: "Rp 5.000" },
             { q: "Dari soal sebelumnya (Boba 10k->15k, 50cup->30cup). Selisih kuantitas (ΔQ) adalah...", options: ["20 cup", "-20 cup", "30 cup", "-50 cup"], ans: "-20 cup" },
             { q: "P1=20.000, Q1=100. Saat P2=22.000, Q2=80. Berapakah nilai (P1/Q1)?", options: ["200", "20", "2", "2.000"], ans: "200" },
-            { q: "P1=10, Q1=20. P2=12, Q2=16. Hitung elastisitasnya (E)!", options: ["E = 0.5", "E = 1", "E = 2", "E = 1.5"], ans: "E = 1" }, // ΔQ=-4, ΔP=2 -> (-4/2)*(10/20) = -2 * 0.5 = -1 => Mutlak 1
+            { q: "P1=10, Q1=20. P2=12, Q2=16. Hitung elastisitasnya (E)!", options: ["E = 0.5", "E = 1", "E = 2", "E = 1.5"], ans: "E = 1" },
             { q: "Jika hasil hitungan elastisitas menunjukkan E = 0,5, maka sifat permintaannya adalah...", options: ["Elastis", "Inelastis", "Uniter", "Elastis Sempurna"], ans: "Inelastis" },
             { q: "Jika hitungan menunjukkan angka elastisitas (E) = 2,5, bagaimana bentuk kurvanya?", options: ["Curam", "Landai", "Vertikal", "Horizontal"], ans: "Landai" },
             
-            // Lanjutan Soal Random (Expand to 100 unique context/scenarios based on the reference)
-            { q: "Sebutkan istilah untuk kondisi 'faktor-faktor lain dianggap tetap' dalam ekonomi!", options: ["Marginal Utility", "Ceteris Paribus", "Laissez-Faire", "Equilibrium"], ans: "Ceteris Paribus" },
-            { q: "Garis horizontal pada grafik kurva (sumbu mendatar) dalam ekonomi biasanya melambangkan...", options: ["P (Harga)", "Q (Kuantitas)", "E (Elastisitas)", "I (Income)"], ans: "Q (Kuantitas)" },
-            { q: "Garis vertikal pada grafik kurva (sumbu tegak) melambangkan...", options: ["P (Harga/Price)", "Q (Kuantitas/Quantity)", "W (Waktu/Time)", "D (Demand)"], ans: "P (Harga/Price)" },
-            { q: "Simbol 'D' pada kurva singkatan dari...", options: ["Difference", "Demand", "Distance", "Deviation"], ans: "Demand" },
-            { q: "Semakin landai sebuah kurva permintaan, menunjukkan bahwa konsumen semakin...", options: ["Sensitif (Elastis)", "Tidak peduli (Inelastis)", "Kaya", "Miskin"], ans: "Sensitif (Elastis)" },
-            { q: "Semakin curam sebuah kurva permintaan, menunjukkan bahwa barang tersebut semakin...", options: ["Tidak berguna", "Mewah dan tersier", "Penting (Kebutuhan pokok)", "Banyak substitusinya"], ans: "Penting (Kebutuhan pokok)" },
-            { q: "Ketika harga barang X naik, jumlah permintaan barang Y ikut naik. Hubungan barang X dan Y adalah...", options: ["Komplementer", "Substitusi", "Independen", "Superior"], ans: "Substitusi" },
-            { q: "Ketika harga barang A turun, jumlah permintaan barang B ikut naik. Hubungan barang A dan B adalah...", options: ["Substitusi", "Komplementer", "Giffen", "Veblen"], ans: "Komplementer" },
-            { q: "Jika harga beras naik, konsumen tidak mungkin mengganti semua makanannya dengan roti karena selera. Ini memperkuat alasan kurva beras berbentuk...", options: ["Landai", "Curam (Inelastis)", "Horizontal", "Melengkung ke atas"], ans: "Curam (Inelastis)" },
-            { q: "Elastisitas yang nilainya nol (E = 0) secara matematis berarti tidak ada perubahan Q sedikitpun. Kasus ini terjadi pada...", options: ["Garam", "Tanah di lokasi strategis", "Sepatu branded", "Tiket bioskop"], ans: "Tanah di lokasi strategis" }, // Context of perfect inelastic
-            { q: "Apa yang membedakan Permintaan Absolut dan Permintaan Potensial?", options: ["Adanya niat membeli", "Adanya kemampuan daya beli", "Ketersediaan waktu", "Adanya produk di toko"], ans: "Adanya kemampuan daya beli" },
-            { q: "Manakah contoh Permintaan Absolut?", options: ["Siswa SD memimpikan beli PS5 tapi uang jajannya Rp2.000", "Pekerja menabung 5 bulan beli laptop", "Pengusaha memborong emas saat harga turun", "Ibu membeli sayur setiap pagi"], ans: "Siswa SD memimpikan beli PS5 tapi uang jajannya Rp2.000" },
-            { q: "Bimo baru gajian. Ia mampu membeli sepatu seharga Rp 1 juta, tapi ia memilih menyimpannya dulu. Bimo ada di tahap permintaan...", options: ["Efektif", "Absolut", "Potensial", "Pasif"], ans: "Potensial" },
-            { q: "Kenaikan harga barang komplementer (pelengkap) akan menyebabkan permintaan barang utamanya...", options: ["Meningkat pesat", "Menurun", "Tidak berubah", "Bergeser ke kanan"], ans: "Menurun" },
-            { q: "Penurunan harga barang substitusi akan membuat permintaan barang utamanya...", options: ["Menurun", "Meningkat", "Stabil", "Menjadi elastis"], ans: "Menurun" },
-            
-            // Soal Hitungan 2 (20 soal hitungan)
-            { q: "Jika ΔQ = 10, ΔP = 2.000, P1 = 10.000, Q1 = 50. Nilai (ΔQ/ΔP) adalah...", options: ["0.005", "5", "50", "200"], ans: "0.005" },
-            { q: "Sambungan soal di atas. Nilai (P1/Q1) adalah...", options: ["200", "20", "2", "0.2"], ans: "200" },
-            { q: "Sambungan soal di atas. Elastisitasnya (E) = 0.005 x 200 = ...", options: ["E = 0.1", "E = 1", "E = 10", "E = 100"], ans: "E = 1" },
-            { q: "Jika E = 1, kurva tersebut disebut elastisitas...", options: ["Uniter", "Sempurna", "Tunggal", "Proporsional mutlak"], ans: "Uniter" },
-            { q: "Harga P1=5.000 (Q1=10). Harga turun jadi P2=4.000 (Q2=15). ΔP adalah...", options: ["1.000", "-1.000", "9.000", "-9.000"], ans: "-1.000" },
-            { q: "Harga P1=5.000 (Q1=10). Harga turun jadi P2=4.000 (Q2=15). ΔQ adalah...", options: ["5", "-5", "10", "25"], ans: "5" },
-            { q: "Lanjutan hitung E (P1=5000, Q1=10, ΔP=-1000, ΔQ=5). E = (5/-1000) * (5000/10) = ...", options: ["-2,5 => Mutlak 2,5", "-0,5 => Mutlak 0,5", "-1 => Mutlak 1", "0"], ans: "-2,5 => Mutlak 2,5" },
-            { q: "Dengan E = 2,5, sifat permintaannya adalah...", options: ["Inelastis", "Elastis", "Uniter", "Sempurna"], ans: "Elastis" },
-            { q: "P1=1000, Q1=50. P2=1200, Q2=45. Berapa E?", options: ["(-5/200) * (1000/50) = 0,5", "(5/200) * (1200/45) = 1", "(-10/100) * 20 = 2", "0,1"], ans: "(-5/200) * (1000/50) = 0,5" },
-            { q: "P1=20, Q1=4. P2=30, Q2=2. Berapa E?", options: ["(-2/10) * (20/4) = 1", "(-2/10) * (20/4) = 2", "0,5", "4"], ans: "(-2/10) * (20/4) = 1" },
-            { q: "P1=10, Q1=20. P2=15, Q2=15. Berapa E?", options: ["(-5/5) * (10/20) = 0,5", "(-5/5) * (15/15) = 1", "2", "0.1"], ans: "(-5/5) * (10/20) = 0,5" },
-            { q: "P1=50, Q1=100. P2=60, Q2=50. Berapa E?", options: ["(-50/10) * (50/100) = 2,5", "(-50/10) * (50/100) = 1,5", "3", "0.5"], ans: "(-50/10) * (50/100) = 2,5" },
-            { q: "P1=100, Q1=10. P2=150, Q2=10. Nilai ΔQ adalah 0. Maka nilai E adalah...", options: ["1", "Tak Terhingga", "0", "0,5"], ans: "0" },
-            { q: "P1=200, Q1=50. P2=200, Q2=100. Nilai ΔP adalah 0. Maka nilai E adalah...", options: ["0", "Tak Terhingga (∞)", "1", "100"], ans: "Tak Terhingga (∞)" },
-            
-            // Logika Ekonomi (Sisa soal hingga 100)
+            // Logika Ekonomi
             { q: "Dalam kejadian flash sale di e-commerce, penurunan harga sedikit membuat jutaan orang checkout. Kasus flash sale ini menunjukkan permintaan yang sangat...", options: ["Elastis", "Inelastis", "Kaku", "Tidak berubah"], ans: "Elastis" },
             { q: "Mengapa kurva permintaan memiliki slope (kemiringan) negatif?", options: ["Karena pembeli tidak menyukai penjual", "Karena hubungan harga dan kuantitas berlawanan arah", "Karena uang saku siswa selalu kurang", "Karena harga selalu naik setiap tahun"], ans: "Karena hubungan harga dan kuantitas berlawanan arah" },
             { q: "Berdasarkan pengertian permintaan, daya beli adalah...", options: ["Keinginan untuk membeli", "Kemampuan finansial/uang untuk membayar", "Selera terhadap barang", "Waktu yang tepat untuk berbelanja"], ans: "Kemampuan finansial/uang untuk membayar" },
@@ -194,8 +211,39 @@
             { q: "Ibu melihat iklan bahwa harga minyak goreng besok akan naik 2x lipat. Hari ini ibu memborong 10 liter minyak. Tindakan ini digerakkan oleh faktor...", options: ["Selera/Iklan", "Ekspektasi harga masa depan", "Peningkatan daya beli", "Perubahan barang komplementer"], ans: "Ekspektasi harga masa depan" },
             { q: "Saat sedang musim panas yang sangat ekstrem, kurva permintaan AC (Air Conditioner) akan bergeser ke kanan akibat dari faktor...", options: ["Selera dan Musim", "Penurunan harga AC", "Kenaikan harga listrik", "Jumlah produsen yang banyak"], ans: "Selera dan Musim" },
             
-            // Random mix to hit exactly 100 items (continuing numeric/conceptual variations)
-            { q: "P1=3000, Q1=30. P2=3300, Q2=27. Hitung nilai elastisitasnya!", options: ["1 (Uniter)", "0,5 (Inelastis)", "1,5 (Elastis)", "2 (Elastis)"], ans: "1 (Uniter)" }, // ΔQ=-3, ΔP=300 -> (3/300)*(3000/30) = 0.01 * 100 = 1
+            { q: "Sebutkan istilah untuk kondisi 'faktor-faktor lain dianggap tetap' dalam ekonomi!", options: ["Marginal Utility", "Ceteris Paribus", "Laissez-Faire", "Equilibrium"], ans: "Ceteris Paribus" },
+            { q: "Garis horizontal pada grafik kurva (sumbu mendatar) dalam ekonomi biasanya melambangkan...", options: ["P (Harga)", "Q (Kuantitas)", "E (Elastisitas)", "I (Income)"], ans: "Q (Kuantitas)" },
+            { q: "Garis vertikal pada grafik kurva (sumbu tegak) melambangkan...", options: ["P (Harga/Price)", "Q (Kuantitas/Quantity)", "W (Waktu/Time)", "D (Demand)"], ans: "P (Harga/Price)" },
+            { q: "Simbol 'D' pada kurva singkatan dari...", options: ["Difference", "Demand", "Distance", "Deviation"], ans: "Demand" },
+            { q: "Semakin landai sebuah kurva permintaan, menunjukkan bahwa konsumen semakin...", options: ["Sensitif (Elastis)", "Tidak peduli (Inelastis)", "Kaya", "Miskin"], ans: "Sensitif (Elastis)" },
+            { q: "Semakin curam sebuah kurva permintaan, menunjukkan bahwa barang tersebut semakin...", options: ["Tidak berguna", "Mewah dan tersier", "Penting (Kebutuhan pokok)", "Banyak substitusinya"], ans: "Penting (Kebutuhan pokok)" },
+            { q: "Ketika harga barang X naik, jumlah permintaan barang Y ikut naik. Hubungan barang X dan Y adalah...", options: ["Komplementer", "Substitusi", "Independen", "Superior"], ans: "Substitusi" },
+            { q: "Ketika harga barang A turun, jumlah permintaan barang B ikut naik. Hubungan barang A dan B adalah...", options: ["Substitusi", "Komplementer", "Giffen", "Veblen"], ans: "Komplementer" },
+            { q: "Jika harga beras naik, konsumen tidak mungkin mengganti semua makanannya dengan roti karena selera. Ini memperkuat alasan kurva beras berbentuk...", options: ["Landai", "Curam (Inelastis)", "Horizontal", "Melengkung ke atas"], ans: "Curam (Inelastis)" },
+            { q: "Elastisitas yang nilainya nol (E = 0) secara matematis berarti tidak ada perubahan Q sedikitpun. Kasus ini terjadi pada...", options: ["Garam", "Tanah di lokasi strategis", "Sepatu branded", "Tiket bioskop"], ans: "Tanah di lokasi strategis" }, 
+            { q: "Apa yang membedakan Permintaan Absolut dan Permintaan Potensial?", options: ["Adanya niat membeli", "Adanya kemampuan daya beli", "Ketersediaan waktu", "Adanya produk di toko"], ans: "Adanya kemampuan daya beli" },
+            { q: "Manakah contoh Permintaan Absolut?", options: ["Siswa SD memimpikan beli PS5 tapi uang jajannya Rp2.000", "Pekerja menabung 5 bulan beli laptop", "Pengusaha memborong emas saat harga turun", "Ibu membeli sayur setiap pagi"], ans: "Siswa SD memimpikan beli PS5 tapi uang jajannya Rp2.000" },
+            { q: "Bimo baru gajian. Ia mampu membeli sepatu seharga Rp 1 juta, tapi ia memilih menyimpannya dulu. Bimo ada di tahap permintaan...", options: ["Efektif", "Absolut", "Potensial", "Pasif"], ans: "Potensial" },
+            { q: "Kenaikan harga barang komplementer (pelengkap) akan menyebabkan permintaan barang utamanya...", options: ["Meningkat pesat", "Menurun", "Tidak berubah", "Bergeser ke kanan"], ans: "Menurun" },
+            { q: "Penurunan harga barang substitusi akan membuat permintaan barang utamanya...", options: ["Menurun", "Meningkat", "Stabil", "Menjadi elastis"], ans: "Menurun" },
+            
+            // Soal Hitungan Tambahan
+            { q: "Jika ΔQ = 10, ΔP = 2.000, P1 = 10.000, Q1 = 50. Nilai (ΔQ/ΔP) adalah...", options: ["0.005", "5", "50", "200"], ans: "0.005" },
+            { q: "Sambungan soal di atas. Nilai (P1/Q1) adalah...", options: ["200", "20", "2", "0.2"], ans: "200" },
+            { q: "Sambungan soal di atas. Elastisitasnya (E) = 0.005 x 200 = ...", options: ["E = 0.1", "E = 1", "E = 10", "E = 100"], ans: "E = 1" },
+            { q: "Jika E = 1, kurva tersebut disebut elastisitas...", options: ["Uniter", "Sempurna", "Tunggal", "Proporsional mutlak"], ans: "Uniter" },
+            { q: "Harga P1=5.000 (Q1=10). Harga turun jadi P2=4.000 (Q2=15). ΔP adalah...", options: ["1.000", "-1.000", "9.000", "-9.000"], ans: "-1.000" },
+            { q: "Harga P1=5.000 (Q1=10). Harga turun jadi P2=4.000 (Q2=15). ΔQ adalah...", options: ["5", "-5", "10", "25"], ans: "5" },
+            { q: "Lanjutan hitung E (P1=5000, Q1=10, ΔP=-1000, ΔQ=5). E = (5/-1000) * (5000/10) = ...", options: ["-2,5 => Mutlak 2,5", "-0,5 => Mutlak 0,5", "-1 => Mutlak 1", "0"], ans: "-2,5 => Mutlak 2,5" },
+            { q: "Dengan E = 2,5, sifat permintaannya adalah...", options: ["Inelastis", "Elastis", "Uniter", "Sempurna"], ans: "Elastis" },
+            { q: "P1=1000, Q1=50. P2=1200, Q2=45. Berapa E?", options: ["(-5/200) * (1000/50) = 0,5", "(5/200) * (1200/45) = 1", "(-10/100) * 20 = 2", "0,1"], ans: "(-5/200) * (1000/50) = 0,5" },
+            { q: "P1=20, Q1=4. P2=30, Q2=2. Berapa E?", options: ["(-2/10) * (20/4) = 1", "(-2/10) * (20/4) = 2", "0,5", "4"], ans: "(-2/10) * (20/4) = 1" },
+            { q: "P1=10, Q1=20. P2=15, Q2=15. Berapa E?", options: ["(-5/5) * (10/20) = 0,5", "(-5/5) * (15/15) = 1", "2", "0.1"], ans: "(-5/5) * (10/20) = 0,5" },
+            { q: "P1=50, Q1=100. P2=60, Q2=50. Berapa E?", options: ["(-50/10) * (50/100) = 2,5", "(-50/10) * (50/100) = 1,5", "3", "0.5"], ans: "(-50/10) * (50/100) = 2,5" },
+            { q: "P1=100, Q1=10. P2=150, Q2=10. Nilai ΔQ adalah 0. Maka nilai E adalah...", options: ["1", "Tak Terhingga", "0", "0,5"], ans: "0" },
+            { q: "P1=200, Q1=50. P2=200, Q2=100. Nilai ΔP adalah 0. Maka nilai E adalah...", options: ["0", "Tak Terhingga (∞)", "1", "100"], ans: "Tak Terhingga (∞)" },
+            
+            { q: "P1=3000, Q1=30. P2=3300, Q2=27. Hitung nilai elastisitasnya!", options: ["1 (Uniter)", "0,5 (Inelastis)", "1,5 (Elastis)", "2 (Elastis)"], ans: "1 (Uniter)" }, 
             { q: "P1=10000, Q1=5. P2=15000, Q2=1. Hitung Elastisitasnya!", options: ["(4/5000)*(10000/5) = 1,6", "0,5", "1", "3"], ans: "(4/5000)*(10000/5) = 1,6" },
             { q: "Nilai koefisien elastisitas 0,8 termasuk kategori...", options: ["Elastis", "Inelastis", "Uniter", "Inelastis Sempurna"], ans: "Inelastis" },
             { q: "Nilai koefisien elastisitas 1,2 termasuk kategori...", options: ["Elastis", "Inelastis", "Uniter", "Elastis Sempurna"], ans: "Elastis" },
@@ -209,26 +257,18 @@
             { q: "Suatu keadaan dimana pembeli 'mau membeli berapapun harganya demi keselamatan/kesehatan', menggambarkan kurva...", options: ["Inelastis Sempurna", "Elastis Sempurna", "Uniter", "Elastis"], ans: "Inelastis Sempurna" },
             { q: "P1=40, Q1=80. P2=60, Q2=40. Elastisitasnya (E) adalah...", options: ["(40/20)*(40/80) = 2 * 0.5 = 1", "(20/40)*(40/80) = 0.25", "2", "1.5"], ans: "(40/20)*(40/80) = 2 * 0.5 = 1" },
             { q: "Permintaan efektif harus selalu didasari oleh...", options: ["Iklan promosi", "Daya beli / uang nyata", "Kebijakan pemerintah", "Hutang bank"], ans: "Daya beli / uang nyata" },
-            { q: "Jika harga bakso Rp 10.000 permintaannya 100 mangkok. Saat harga bakso turun jadi Rp 8.000, permintaan diprediksi akan...", options: ["Naik lebih dari 100 mangkok", "Turun di bawah 100", "Tetap 100", "Menjadi 0"], ans: "Naik lebih dari 100 mangkok" }
-        ];
-
-        // Duplikasi & Modifikasi soal untuk melengkapi jumlah menjadi pas 100 soal unik 
-        // Mengubah konteks nama orang, angka atau barang agar variasinya kaya.
-        let baseLength = bankSoal.length; // Saat ini ada 96 soal di array atas
-        const ekstraSoal = [
+            { q: "Jika harga bakso Rp 10.000 permintaannya 100 mangkok. Saat harga bakso turun jadi Rp 8.000, permintaan diprediksi akan...", options: ["Naik lebih dari 100 mangkok", "Turun di bawah 100", "Tetap 100", "Menjadi 0"], ans: "Naik lebih dari 100 mangkok" },
+            
             { q: "Joko ingin beli motor sport seharga Rp 40 Juta, saldo ATM-nya Rp 500 Ribu. Jenis permintaannya?", options: ["Absolut", "Potensial", "Efektif", "Tersier"], ans: "Absolut" },
             { q: "Rina menunda beli kosmetik walau uangnya cukup karena menunggu Harbolnas. Jenis permintaannya?", options: ["Absolut", "Potensial", "Efektif", "Substitusi"], ans: "Potensial" },
             { q: "Pak Ahmad langsung transfer Rp 20 Juta untuk melunasi DP mobil barunya. Jenis permintaannya?", options: ["Absolut", "Potensial", "Efektif", "Giffen"], ans: "Efektif" },
             { q: "P1=8.000, Q1=100. P2=10.000, Q2=90. Berapa E?", options: ["(10/2000)*(8000/100) = 0.4 (Inelastis)", "0.8", "1", "1.4"], ans: "(10/2000)*(8000/100) = 0.4 (Inelastis)" }
         ];
-        bankSoal.push(...ekstraSoal); 
-        // Total Bank Soal kini persis 100 Soal yang benar-benar berbeda.
 
         let generatedQuestions = [];
         let userAnswers = {};
 
         window.onload = () => {
-            // Karena bank soal sekarang 100 soal utuh, kita tinggal mengacak seluruh isinya.
             generateExamQuestions();
             renderQuiz();
         };
@@ -244,8 +284,6 @@
 
         function generateExamQuestions() {
             let tempQuestions = [];
-            
-            // Loop 100 soal dari bank soal
             for(let i = 0; i < 100; i++) {
                 let base = bankSoal[i];
                 let shuffledOptions = shuffleArray(base.options);
@@ -257,8 +295,6 @@
                     correctAnswer: base.ans
                 });
             }
-            
-            // Acak urutan tampilan nomor soalnya
             generatedQuestions = shuffleArray(tempQuestions);
         }
 
